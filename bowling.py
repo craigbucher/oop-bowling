@@ -1,19 +1,45 @@
+import random
+
+def lucky_rand(n):
+    return max(random.randint(0,n), random.randint(0, n)) # takes largest of two randoms (to simulate good bowlers)
+
 class Game:
     def __init__(self, players):
         self.players = players
         self.current_frame = 0
 
     def play(self):
-        for i in range(10):
+        for i in range(10):     # not even using 'i', just doing something 10 times
             self.bowl_frame()
         for players in self.players:
             print(f'The final score for {player.name} is {player.calc_score()}.') # Never actually saving the score - just calculate it from raw data whenever it's needed
 
-    def bowl_fram(self):
-        if self.current_frame <= 9:
+    def bowl_frame(self):
+        # if self.current_frame <= 9:
             self.current_frame += 1
             for player in self.players:
-                
+                balls = []
+
+                #first throw
+                balls.append(lucky_rand(10))
+                if balls [0] < 10:          # Did not get a strike, so get second ball
+                    balls.append(lucky_rand(10 - balls[0]))
+
+                    #on the final frame of the game, get a third ball if roll a spare
+                    if balls[0] + balls[1] == 10 and self.current_frame == 10:
+                        balls.append(lucky_rand)(10)
+
+                #if they get a strike on the last frame, they get 2 exta balls
+                if balls[0] == 10 and self.current_frame == 10:
+                    balls.append(lucky_rand(10))
+                    # if first 10th frame roll is a strike, reset to 10 pins
+                    if balls[1] == 10:
+                        balls.append(lucky_rand(10))
+                    # if first 10th frame roll is not a strike, use remaining pins
+                    else:
+                        balls.append(lucky_rand(10 - balls[1]))
+
+                player.frames.append(Frame(balls))
 
 class Player:
     def __init__(self, name):
@@ -22,8 +48,34 @@ class Player:
 
     def calc_score(self):
         score = 0
-        for i, frame in enumerate(self.frames) # gives both index and frame value
-            pass
+        for i, frame in enumerate(self.frames): # gives both index and frame value
+            # want to handle final frame first
+            if i == 9:
+                if frame.is_strike():
+                    score += 10 + frame.balls[1] + frame.balls[2]
+                elif frame.is_spare():
+                    score += 10 + frame.balls[2]
+                else:
+                    score += frame.balls[0] + frame.balls[1]
+            
+            elif frame.is_strike():
+                # strike gets 10 points, plus first roll in next frame
+                score += 10 + self.frames[i + 1].balls[0]
+                # if not a  strike in next frame
+                if len(self.frames[i + 1].balls) > 1:
+                    # just add both balls
+                    score += self.frames[i + 1].balls[1]
+                # if *is* a strike in next frame
+                else:
+                    # add score (10) from strike
+                    score += self.frames[i + 2].balls[0]
+
+            elif frame.is_spare():
+                score += 10 + self.frames[i + 1].balls[0]
+
+            else: 
+                score += frame.balls[0] + frame.balls[1]
+
         return score
         
 class Frame:
@@ -38,5 +90,11 @@ class Frame:
     def is_spare(self):
         return len(self.balls) > 1 and self.balls[0] + self.balls[1] == 10 # combination of both balls equals 10
 
-
 #firstFrame = Frame([3,6]) # example frame
+players = []
+for player in ['Alice', 'Bob', 'Carol', 'Dan']: #  "should really be a map, not a for loop"
+    players.append(Player(player))
+the_game = Game(players)
+the_game.play()
+
+print('finished bowling')
