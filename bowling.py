@@ -11,7 +11,7 @@ class Game:
     def play(self):
         for i in range(10):     # not even using 'i', just doing something 10 times
             self.bowl_frame()
-        for players in self.players:
+        for player in self.players:
             print(f'The final score for {player.name} is {player.calc_score()}.') # Never actually saving the score - just calculate it from raw data whenever it's needed
 
     def bowl_frame(self):
@@ -27,7 +27,7 @@ class Game:
 
                     #on the final frame of the game, get a third ball if roll a spare
                     if balls[0] + balls[1] == 10 and self.current_frame == 10:
-                        balls.append(lucky_rand)(10)
+                        balls.append(lucky_rand(10))
 
                 #if they get a strike on the last frame, they get 2 exta balls
                 if balls[0] == 10 and self.current_frame == 10:
