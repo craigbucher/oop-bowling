@@ -49,6 +49,7 @@ class Player:
     def calc_score(self):
         score = 0
         for i, frame in enumerate(self.frames): # gives both index and frame value
+            print(frame.balls, i) # testing - print out each frame
             # want to handle final frame first
             if i == 9:
                 if frame.is_strike():
